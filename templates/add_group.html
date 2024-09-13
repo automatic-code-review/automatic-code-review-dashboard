@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}ACR Dashboard{% endblock %}
+
+{% block content %}
+<h2>Cadastrar grupo</h2>
+<form method="POST" action="{{ url_for('manage_group') }}">
+    <div class="mb-3">
+        <label for="name" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Gravar</button>
+    <a href="{{ url_for('list_groups') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

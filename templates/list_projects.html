@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}ACR Dashboard{% endblock %}
+
+{% block content %}
+<h2>Projetos</h2>
+<ul class="list-group">
+    {% for project in projects %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ project[1] }} - {{ project[2] }}
+        <div>
+            <form action="{{ url_for('run_execution') }}" method="POST" style="display: inline;">
+                <input type="hidden" name="project_id" value="{{ project[0] }}">
+                <input type="hidden" name="group_id" value="{{ group_id }}">
+                <button type="submit" class="btn btn-primary btn-sm">Executar</button>
+            </form>
+
+            <a href="{{ url_for('list_issues', project_id=project[0], group_id=group_id) }}" class="btn btn-info btn-sm ml-2">Detalhes</a>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('add_project', group_id=group_id) }}" class="btn btn-primary mt-3">Cadastrar</a>
+<a href="{{ url_for('list_groups') }}" class="btn btn-secondary mt-3">Grupos</a>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}ACR Dashboard{% endblock %}
+
+{% block content %}
+<h2>Execução</h2>
+<ul class="list-group">
+    <li class="list-group-item"><strong>Data e Hora do Pedido:</strong> {{ execution[0] }}</li>
+    <li class="list-group-item"><strong>Quantidade de Tentativas:</strong> {{ execution[1] }}</li>
+    <li class="list-group-item"><strong>Status:</strong>
+        {% if execution[2] == 0 %}
+        PENDENTE
+        {% elif execution[2] == 1 %}
+        FALHA
+        {% elif execution[2] == 2 %}
+        SUCESSO
+        {% elif execution[2] == 3 %}
+        CANCELADO
+        {% endif %}
+    </li>
+    <li class="list-group-item"><strong>Data e Hora Iniciado:</strong> {{ execution[3] }}</li>
+    <li class="list-group-item"><strong>Data e Hora Finalizado:</strong> {{ execution[4] }}</li>
+    <li class="list-group-item"><strong>Nome do Projeto:</strong> {{ execution[5] }}</li>
+    <li class="list-group-item"><strong>Detalhes:</strong> {{ execution[6] }}</li>
+</ul>
+<form action="{{ url_for('reprocess_execution', execution_id=execution[7]) }}" method="POST" style="display: inline;">
+    <button type="submit" class="btn btn-warning mt-3"
+            {% if execution[2] !=1 and execution[2] !=3 %}disabled{% endif %}>
+        Reprocessar
+    </button>
+</form>
+<a href="{{ url_for('list_executions') }}" class="btn btn-secondary mt-3">Execuções</a>
+{% endblock %}

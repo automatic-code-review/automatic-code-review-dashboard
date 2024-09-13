@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}ACR Dashboard{% endblock %}
+
+{% block content %}
+<h2>Issues</h2>
+
+<!-- Formulário para Filtrar por Tipo de Issue -->
+<form method="GET" action="{{ url_for('list_issues', project_id=project_id, group_id=group_id) }}"
+      class="form-inline mb-3">
+    <div class="form-group">
+        <label for="tp_issue" class="mr-2">Tipo de Issue:</label>
+        <input type="text" id="tp_issue" name="tp_issue" value="{{ tp_issue }}" class="form-control mr-2"
+               placeholder="Tipo de Issue">
+    </div>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+    <a href="{{ url_for('list_issues', project_id=project_id, group_id=group_id) }}" class="btn btn-secondary ml-2">Limpar
+        Filtro</a>
+</form>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Issue</th>
+        <th>Arquivo</th>
+        <th>Linha Inicial</th>
+        <th>Linha Final</th>
+        <th>Tipo de Issue</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for issue in issues %}
+    <tr>
+        <td>{{ issue[0] }}</td>
+        <td>{{ issue[1] }}</td>
+        <td>{{ issue[2] }}</td>
+        <td>{{ issue[3] }}</td>
+        <td>{{ issue[4] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('list_projects', group_id=group_id) }}" class="btn btn-secondary mt-3">Projetos</a>
+{% endblock %}

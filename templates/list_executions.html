@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}ACR Dashboard{% endblock %}
+
+{% block content %}
+<h2>Execuções</h2>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Criado em</th>
+        <th>Tentativas</th>
+        <th>Status</th>
+        <th>Inicio</th>
+        <th>Fim</th>
+        <th>Projeto</th>
+        <th>Qtd. Issue</th>
+        <th>Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for execution in executions %}
+    <tr>
+        <td>{{ execution[1] }}</td>
+        <td>{{ execution[2] }}</td>
+        <td>
+            {% if execution[3] == 0 %}
+            PENDENTE
+            {% elif execution[3] == 1 %}
+            FALHA
+            {% elif execution[3] == 2 %}
+            SUCESSO
+            {% elif execution[3] == 3 %}
+            CANCELADO
+            {% endif %}
+        </td>
+        <td>{{ execution[4] }}</td>
+        <td>{{ execution[5] }}</td>
+        <td>{{ execution[6] }}</td>
+        <td>{{ execution[7] }}</td>
+        <td>
+            <form action="{{ url_for('cancel_execution', execution_id=execution[0]) }}" method="POST"
+                  style="display: inline;">
+                <button type="submit" class="btn btn-danger btn-sm"
+                        {% if execution[3] !=0 and execution[3] !=1 %}disabled{% endif %}>
+                    Cancelar
+                </button>
+            </form>
+            <a href="{{ url_for('view_execution_details', execution_id=execution[0]) }}"
+               class="btn btn-info btn-sm">Ver Detalhes</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<a href="{{ url_for('list_groups') }}" class="btn btn-secondary mt-3">Grupos</a>
+{% endblock %}

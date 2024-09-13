@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}ACR Dashboard{% endblock %}
+
+{% block content %}
+<h2>Cadastrar projeto</h2>
+<form method="POST" action="{{ url_for('add_project', group_id=group_id) }}">
+    <div class="mb-3">
+        <label for="name" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="repositorio" class="form-label">URL Repositorio</label>
+        <input type="text" class="form-control" id="repositorio" name="repositorio" required>
+    </div>
+    <div class="mb-3">
+        <label for="branch" class="form-label">Branch name</label>
+        <input type="text" class="form-control" id="branch" name="branch" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Gravar</button>
+    <a href="{{ url_for('list_projects', group_id=group_id) }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

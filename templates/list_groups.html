@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}ACR Dashboard{% endblock %}
+
+{% block content %}
+<h2>Grupos</h2>
+<ul class="list-group">
+    {% for group in groups %}
+    <li class="list-group-item">
+        <a href="{{ url_for('list_projects', group_id=group[0]) }}">{{ group[1] }}</a>
+    </li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('manage_group') }}" class="btn btn-primary mt-3">Cadastrar</a>
+<a href="{{ url_for('list_executions') }}" class="btn btn-primary mt-3">Execuções</a>
+{% endblock %}
