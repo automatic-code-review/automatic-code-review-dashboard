@@ -55,7 +55,7 @@ def list_groups():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute('SELECT id_group, ds_name FROM "group"')
+    cur.execute('SELECT id_group, ds_name FROM "group" ORDER BY ds_name')
     groups = cur.fetchall()
 
     cur.close()
@@ -74,7 +74,7 @@ def list_projects():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT id_project, ds_name, ds_branch_name FROM project WHERE id_group = %s", (group_id,))
+    cur.execute("SELECT id_project, ds_name, ds_branch_name FROM project WHERE id_group = %s ORDER BY ds_name", (group_id,))
     projects = cur.fetchall()
 
     cur.close()
@@ -160,6 +160,7 @@ def list_executions():
         SELECT e.id_execution, e.dh_request, e.qt_attempt, e.tp_status, e.dh_started, e.dh_ended, p.ds_name, e.qt_issue
         FROM execution e
         JOIN project p ON e.id_project = p.id_project
+        ORDER BY e.id_execution DESC
     """)
 
     executions = cur.fetchall()
@@ -179,6 +180,7 @@ def view_execution_details(execution_id):
         FROM execution e
         JOIN project p ON e.id_project = p.id_project
         WHERE e.id_execution = %s
+        ORDER BY e.id_execution DESC
     """, (execution_id,))
 
     execution = cur.fetchone()
@@ -245,12 +247,14 @@ def list_issues(project_id, group_id):
             SELECT tx_issue, lk_file, nr_start_line, nr_end_line, tp_issue
             FROM issue
             WHERE id_project = %s AND tp_issue = %s
+            ORDER BY id_issue
         """, (project_id, tp_issue))
     else:
         cur.execute("""
             SELECT tx_issue, lk_file, nr_start_line, nr_end_line, tp_issue
             FROM issue
             WHERE id_project = %s
+            ORDER BY id_issue
         """, (project_id,))
 
     issues = cur.fetchall()
