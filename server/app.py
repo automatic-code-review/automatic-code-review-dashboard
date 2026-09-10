@@ -131,6 +131,9 @@ def execution_data(execution_id):
 class DashboardHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         route = urlparse(self.path).path
+        if route == "/health":
+            self.send_text("OK")
+            return
         if route == "/api/dashboard":
             query = parse_qs(urlparse(self.path).query)
             limit = query.get("limit", [10])[0]

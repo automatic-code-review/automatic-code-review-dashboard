@@ -2,8 +2,6 @@ import argparse
 import datetime
 import json
 import os
-import shutil
-import subprocess
 import sys
 import tempfile
 import threading
@@ -16,47 +14,38 @@ def execute():
     parser.add_argument("--GROUP_NAME", required=True, help="Nome do grupo")
     parser.add_argument("--PROJECT_NAME", required=True, help="Nome do projeto")
     parser.add_argument("--BRANCH_NAME", required=True, help="Nome da branch")
-    source_group = parser.add_mutually_exclusive_group()
-    source_group.add_argument("--CLONE_URL", help="URL Git do projeto")
-    source_group.add_argument(
-        "--SOURCE_PATH",
-        help="Caminho de um projeto ja clonado",
+    parser.add_argument(
+        "--SOURCE_PATH", required=True, help="Caminho de um projeto ja clonado"
     )
     parser.add_argument(
         "--PROCESSOR_PATH",
         required=True,
         help="Caminho da pasta automatic-code-review-processor",
     )
-    parser.add_argument(
-        "--EXTENSIONS",
-        nargs="*",
-        default=[],
-        help="Extensoes especificas; sem valores executa todas",
-    )
     args = parser.parse_args()
+
     processor_path = os.path.abspath(args.PROCESSOR_PATH)
     if not os.path.isdir(processor_path):
         raise ValueError(f"PROCESSOR_PATH nao e uma pasta valida: {processor_path}")
+
     source_path = os.path.abspath(args.SOURCE_PATH) if args.SOURCE_PATH else None
     if source_path and not os.path.isdir(source_path):
         raise ValueError(f"SOURCE_PATH nao e uma pasta valida: {source_path}")
+
     sys.path.insert(0, processor_path)
-    from app.processor import review
+    from app.processor import review  # pyright: ignore[reportMissingImports]
 
     started_at = datetime.datetime.now(datetime.timezone.utc)
+
     output = ""
     status = "failed"
-    project_url = args.CLONE_URL or source_path or ""
+    project_url = source_path
     run_path = None
+
     try:
-        if not project_url:
-            project_url = get_project_url(args.GROUP_NAME, args.PROJECT_NAME)
-        run_path, path_source, path_resources = prepare_run_workspace(
-            project_url,
-            args.BRANCH_NAME,
-            processor_path,
-            source_path,
-        )
+        run_path = source_path
+        path_source = source_path
+        path_resources = os.path.join(processor_path, "resources")
         merge = {
             "author": "",
             "project_name": args.PROJECT_NAME,
@@ -69,7 +58,6 @@ def execute():
             path_source,
             path_resources,
             merge,
-            args.EXTENSIONS,
             run_path,
             review,
         )
@@ -109,7 +97,6 @@ def run_review_with_output(
     path_source,
     path_resources,
     merge,
-    extensions,
     working_directory,
     review,
 ):
@@ -148,9 +135,15 @@ def run_review_with_output(
                     merge=merge,
                     stage="static",
                     config_global={},
-                    selected_extensions=extensions,
                 )
-            except Exception as error:
+            except (
+                OSError,
+                ValueError,
+                RuntimeError,
+                TypeError,
+                KeyError,
+                AttributeError,
+            ) as error:
                 review_error = error
             finally:
                 os.chdir(original_working_directory)
@@ -168,50 +161,6 @@ def run_review_with_output(
         os.close(pipe_read_fd)
         os.unlink(capture_path)
     return comments, output, review_error
-
-
-def get_project_url(group_name, project_name):
-    with connect() as connection:
-        ensure_schema(connection)
-        result = connection.execute(
-            """
-            SELECT projects.clone_url
-            FROM projects
-            JOIN groups ON groups.id = projects.group_id
-            WHERE groups.name = %s AND projects.name = %s
-            """,
-            (group_name, project_name),
-        ).fetchone()
-    if result is None:
-        raise ValueError("--CLONE_URL e obrigatorio para cadastrar um projeto novo")
-    return result[0]
-
-
-def prepare_run_workspace(project_url, branch, processor_path, source_path=None):
-    run_path = tempfile.mkdtemp(prefix="acr-dashboard-run-")
-    path_source = os.path.join(run_path, "source")
-    path_resources = os.path.join(run_path, "resources")
-    try:
-        if source_path:
-            shutil.copytree(
-                source_path,
-                path_source,
-                ignore=shutil.ignore_patterns(".git"),
-            )
-        else:
-            subprocess.run(
-                ["git", "clone", "--branch", branch, project_url, path_source],
-                check=True,
-            )
-            shutil.rmtree(os.path.join(path_source, ".git"), ignore_errors=True)
-        shutil.copytree(
-            os.path.join(processor_path, "resources"),
-            path_resources,
-        )
-    except Exception:
-        shutil.rmtree(run_path, ignore_errors=True)
-        raise
-    return run_path, path_source, path_resources
 
 
 def build_merge_changes(path_source):

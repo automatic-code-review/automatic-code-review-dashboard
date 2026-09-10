@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,451 +18,1119 @@
       --yellow: #f3c969;
       --shadow: 0 16px 40px rgba(22, 34, 48, .08);
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
-    button, input, select { font: inherit; }
-    button { cursor: pointer; }
-    .shell { min-height: 100vh; }
-    .topbar { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px clamp(24px, 3vw, 56px); background: var(--ink); color: white; }
-    .brand { display: inline-flex; align-items: center; gap: 12px; color: white; background: transparent; border: 0; font-weight: 800; letter-spacing: .03em; padding: 0; }
-    .breadcrumbs { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; color: rgba(255,255,255,.62); font-size: .85rem; }
-    .breadcrumb { max-width: 220px; overflow: hidden; color: rgba(255,255,255,.7); background: transparent; border: 0; padding: 4px 0; text-overflow: ellipsis; white-space: nowrap; }
-    .breadcrumb.is-link { color: white; cursor: pointer; }
-    .breadcrumb.is-link:hover { color: var(--yellow); }
-    .breadcrumb-separator { color: rgba(255,255,255,.35); }
-    .content { width: 100%; margin: 0 auto; padding: 36px clamp(24px, 3vw, 56px) 64px; }
-    .view-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-    .view-header h2 { margin: 5px 0 0; font-size: 2rem; letter-spacing: -.03em; }
-    .view-header p { margin: 8px 0 0; color: var(--muted); }
-    .stat-strip { display: flex; gap: 10px; flex-wrap: wrap; margin: 24px 0 34px; }
-    .stat { min-width: 142px; padding: 15px 17px; background: rgba(255,255,255,.75); border: 1px solid rgba(220,228,232,.9); border-radius: 8px; }
-    .stat strong { display: block; font-size: 1.45rem; }
-    .stat span { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
-    .section-label { display: flex; align-items: center; justify-content: space-between; margin: 30px 0 14px; }
-    .section-label h3 { margin: 0; font-size: 1rem; letter-spacing: .08em; text-transform: uppercase; }
-    .section-label span { color: var(--muted); font-size: .9rem; }
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 18px; }
-    .project-card, .branch-card { position: relative; width: 100%; display: block; text-align: left; text-decoration: none; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); box-shadow: var(--shadow); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
-    .project-card, .project-card:visited, .branch-card, .branch-card:visited { color: var(--ink); }
-    .project-card.issue-low, .branch-card.issue-low { background: #e5f4ec; border-color: #9bd2b0; }
-    .project-card.issue-medium, .branch-card.issue-medium { background: #fff5d6; border-color: #e7c96a; }
-    .project-card.issue-high, .branch-card.issue-high { background: #fde3df; border-color: #e2a097; }
-    .project-card { min-height: 190px; padding: 22px; }
-    .branch-card { min-height: 165px; padding: 20px; }
-    .project-card:hover, .branch-card:hover { transform: translateY(-4px); border-color: var(--teal); box-shadow: 0 20px 46px rgba(22, 34, 48, .13); }
-    .card-kicker { color: var(--teal); font-size: .75rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-    .card-title { margin: 23px 0 14px; font-size: 1.35rem; }
-    .card-meta { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: .9rem; }
-    .card-arrow { color: var(--coral); font-size: 1.35rem; }
-    .branch-card .card-title { margin-top: 30px; }
-    .back-link { border: 0; padding: 0; color: var(--teal); background: transparent; font-weight: 700; }
-    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 16px; margin-bottom: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
-    .filter-group { display: flex; gap: 10px; flex-wrap: wrap; }
-    input { min-width: 210px; padding: 10px 12px; color: var(--ink); background: white; border: 1px solid var(--line); border-radius: 6px; outline-color: var(--teal); }
-    .type-combobox { position: relative; min-width: 230px; }
-    .type-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; color: var(--ink); background: white; border: 1px solid var(--line); border-radius: 6px; text-align: left; }
-    .type-trigger:hover, .type-trigger[aria-expanded="true"] { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(8, 127, 130, .12); }
-    .type-chevron { color: var(--teal); font-size: 1.1rem; transition: transform .16s ease; }
-    .type-trigger[aria-expanded="true"] .type-chevron { transform: rotate(180deg); }
-    .type-menu { position: absolute; z-index: 5; top: calc(100% + 7px); left: 0; right: 0; display: none; max-height: 260px; overflow-y: auto; padding: 6px; background: white; border: 1px solid var(--line); border-radius: 7px; box-shadow: 0 14px 30px rgba(22, 34, 48, .16); }
-    .type-combobox.is-open .type-menu { display: grid; gap: 2px; }
-    .type-option { display: flex; width: 100%; padding: 9px 10px; color: var(--ink); background: transparent; border: 0; border-radius: 4px; text-align: left; }
-    .type-option:hover, .type-option.is-selected { color: var(--teal-dark); background: #e8f4f2; }
-    .issue-count { color: var(--muted); font-size: .9rem; white-space: nowrap; }
-    .issue-list { overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
-    .pagination { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; }
-    .pagination-controls { display: flex; align-items: center; gap: 8px; }
-    .pagination button { min-width: 38px; padding: 8px 12px; color: var(--teal-dark); background: var(--panel); border: 1px solid var(--line); border-radius: 5px; }
-    .pagination button:hover:not(:disabled) { border-color: var(--teal); background: #e8f4f2; }
-    .pagination button:disabled { cursor: not-allowed; opacity: .45; }
-    .pagination select { min-width: 86px; padding: 8px 10px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 5px; }
-    .pagination-summary { color: var(--muted); font-size: .85rem; }
-    .issue-row { display: grid; grid-template-columns: minmax(150px, 16%) minmax(0, 1fr) minmax(220px, 22%) 42px; gap: 24px; padding: 22px 24px; border-bottom: 1px solid var(--line); }
-    .issue-row.is-hidden { display: none !important; }
-    .issue-row:last-child { border-bottom: 0; }
-    .issue-type { align-self: start; display: inline-flex; flex-direction: column; align-items: flex-start; width: fit-content; padding: 5px 9px; color: var(--teal-dark); background: #dff1ed; border-radius: 4px; font-size: .75rem; font-weight: 800; }
-    .issue-type small { display: block; margin-top: 5px; color: var(--muted); font-size: .7rem; font-weight: 600; }
-    .issue-actions { position: relative; grid-column: -1; grid-row: 1; align-self: start; }
-    .options-button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 50%; font-size: 1.25rem; line-height: 1; }
-    .options-button:hover, .options-button:focus-visible, .issue-actions.is-open .options-button { color: var(--teal-dark); background: #e8f4f2; border-color: var(--teal); outline: none; }
-    .options-menu { position: absolute; z-index: 5; top: 38px; right: 0; display: none; min-width: 190px; padding: 5px; background: white; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 12px 28px rgba(22, 34, 48, .16); }
-    .issue-actions.is-open .options-menu { display: block; }
-    .options-menu a { display: block; padding: 9px 10px; color: var(--ink); border-radius: 4px; font-size: .82rem; text-decoration: none; white-space: nowrap; }
-    .options-menu a:hover, .options-menu a:focus-visible { color: var(--teal-dark); background: #e8f4f2; outline: none; }
-    .issue-comment { line-height: 1.55; overflow-wrap: anywhere; }
-    .issue-comment p { margin: 0 0 10px; }
-    .issue-comment p:last-child { margin-bottom: 0; }
-    .issue-comment pre { margin: 12px 0 0; padding: 12px; overflow-x: auto; color: #eaf2f3; background: #162230; border-radius: 5px; }
-    .issue-comment code { padding: 2px 4px; color: var(--teal-dark); background: #e8f4f2; border-radius: 3px; font-size: .9em; }
-    .issue-comment pre code { padding: 0; color: inherit; background: transparent; }
-    .issue-comment a { color: var(--teal-dark); font-weight: 700; }
-    .issue-position { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 9px 12px; color: var(--ink); background: #f3f6f7; border: 1px solid transparent; border-left: 3px solid var(--yellow); border-radius: 5px; text-align: left; overflow-wrap: anywhere; }
-    .issue-position:hover, .issue-position:focus-visible { border-color: var(--teal); border-left-color: var(--teal); background: #e8f4f2; outline: none; }
-    .issue-position.copied { border-color: var(--teal); color: var(--teal-dark); }
-    .issue-file { font: .8rem/1.35 ui-monospace, SFMono-Regular, Consolas, monospace; font-weight: 700; }
-    .issue-line { color: var(--muted); font-size: .76rem; }
-    .empty, .error { padding: 40px; text-align: center; color: var(--muted); background: var(--panel); border: 1px dashed var(--line); border-radius: 8px; }
-    .error { color: #a12622; }
-    .execution-link { margin-top: 28px; padding: 0; color: var(--teal); background: transparent; border: 0; font-weight: 800; }
-    .page-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 24px; }
-    .page-actions .execution-link { margin-top: 0; padding: 10px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; }
-    .page-actions .execution-link:hover { border-color: var(--teal); background: #e8f4f2; }
-    .execution-list { display: grid; gap: 10px; }
-    .execution-item { padding: 16px 18px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: 7px; }
-    .execution-item.is-failed { border-left-color: var(--coral); }
-    .execution-main { display: flex; justify-content: space-between; gap: 16px; }
-    .execution-context { font-weight: 800; }
-    .execution-meta { margin-top: 7px; color: var(--muted); font-size: .83rem; }
-    .execution-status { color: var(--teal-dark); font-size: .8rem; font-weight: 800; text-transform: uppercase; }
-    .execution-item.is-failed .execution-status { color: #a12622; }
-    .execution-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 16px; }
-    .execution-filter { min-width: 150px; padding: 9px 10px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 5px; }
-    .execution-log { max-height: calc(100vh - 230px); overflow: auto; margin-top: 20px; padding: 18px; color: #eaf2f3; background: var(--ink); border-radius: 6px; font: .78rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; }
-    @media (max-width: 980px) {
-      .issue-row { grid-template-columns: 170px minmax(0, 1fr) 42px; }
-      .issue-position { grid-column: 1 / -1; }
+
+    * {
+      box-sizing: border-box;
     }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .shell {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 14px clamp(24px, 3vw, 56px);
+      background: var(--ink);
+      color: white;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      background: transparent;
+      border: 0;
+      font-weight: 800;
+      letter-spacing: .03em;
+      padding: 0;
+    }
+
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+      color: rgba(255, 255, 255, .62);
+      font-size: .85rem;
+    }
+
+    .breadcrumb {
+      max-width: 220px;
+      overflow: hidden;
+      color: rgba(255, 255, 255, .7);
+      background: transparent;
+      border: 0;
+      padding: 4px 0;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .breadcrumb.is-link {
+      color: white;
+      cursor: pointer;
+    }
+
+    .breadcrumb.is-link:hover {
+      color: var(--yellow);
+    }
+
+    .breadcrumb-separator {
+      color: rgba(255, 255, 255, .35);
+    }
+
+    .content {
+      width: 100%;
+      margin: 0 auto;
+      padding: 36px clamp(24px, 3vw, 56px) 64px;
+    }
+
+    .view-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .view-header h2 {
+      margin: 5px 0 0;
+      font-size: 2rem;
+      letter-spacing: -.03em;
+    }
+
+    .view-header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .stat-strip {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 24px 0 34px;
+    }
+
+    .stat {
+      min-width: 142px;
+      padding: 15px 17px;
+      background: rgba(255, 255, 255, .75);
+      border: 1px solid rgba(220, 228, 232, .9);
+      border-radius: 8px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.45rem;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 30px 0 14px;
+    }
+
+    .section-label h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .section-label span {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+      gap: 18px;
+    }
+
+    .project-card,
+    .branch-card {
+      position: relative;
+      width: 100%;
+      display: block;
+      text-align: left;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .project-card,
+    .project-card:visited,
+    .branch-card,
+    .branch-card:visited {
+      color: var(--ink);
+    }
+
+    .project-card.issue-low,
+    .branch-card.issue-low {
+      background: #e5f4ec;
+      border-color: #9bd2b0;
+    }
+
+    .project-card.issue-medium,
+    .branch-card.issue-medium {
+      background: #fff5d6;
+      border-color: #e7c96a;
+    }
+
+    .project-card.issue-high,
+    .branch-card.issue-high {
+      background: #fde3df;
+      border-color: #e2a097;
+    }
+
+    .project-card {
+      min-height: 190px;
+      padding: 22px;
+    }
+
+    .branch-card {
+      min-height: 165px;
+      padding: 20px;
+    }
+
+    .project-card:hover,
+    .branch-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--teal);
+      box-shadow: 0 20px 46px rgba(22, 34, 48, .13);
+    }
+
+    .card-kicker {
+      color: var(--teal);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .card-title {
+      margin: 23px 0 14px;
+      font-size: 1.35rem;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .card-arrow {
+      color: var(--coral);
+      font-size: 1.35rem;
+    }
+
+    .branch-card .card-title {
+      margin-top: 30px;
+    }
+
+    .back-link {
+      border: 0;
+      padding: 0;
+      color: var(--teal);
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input {
+      min-width: 210px;
+      padding: 10px 12px;
+      color: var(--ink);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      outline-color: var(--teal);
+    }
+
+    .type-combobox {
+      position: relative;
+      min-width: 230px;
+    }
+
+    .type-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      color: var(--ink);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      text-align: left;
+    }
+
+    .type-trigger:hover,
+    .type-trigger[aria-expanded="true"] {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(8, 127, 130, .12);
+    }
+
+    .type-chevron {
+      color: var(--teal);
+      font-size: 1.1rem;
+      transition: transform .16s ease;
+    }
+
+    .type-trigger[aria-expanded="true"] .type-chevron {
+      transform: rotate(180deg);
+    }
+
+    .type-menu {
+      position: absolute;
+      z-index: 5;
+      top: calc(100% + 7px);
+      left: 0;
+      right: 0;
+      display: none;
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 6px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      box-shadow: 0 14px 30px rgba(22, 34, 48, .16);
+    }
+
+    .type-combobox.is-open .type-menu {
+      display: grid;
+      gap: 2px;
+    }
+
+    .type-option {
+      display: flex;
+      width: 100%;
+      padding: 9px 10px;
+      color: var(--ink);
+      background: transparent;
+      border: 0;
+      border-radius: 4px;
+      text-align: left;
+    }
+
+    .type-option:hover,
+    .type-option.is-selected {
+      color: var(--teal-dark);
+      background: #e8f4f2;
+    }
+
+    .issue-count {
+      color: var(--muted);
+      font-size: .9rem;
+      white-space: nowrap;
+    }
+
+    .issue-list {
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pagination button {
+      min-width: 38px;
+      padding: 8px 12px;
+      color: var(--teal-dark);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      border-color: var(--teal);
+      background: #e8f4f2;
+    }
+
+    .pagination button:disabled {
+      cursor: not-allowed;
+      opacity: .45;
+    }
+
+    .pagination select {
+      min-width: 86px;
+      padding: 8px 10px;
+      color: var(--ink);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+
+    .pagination-summary {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .issue-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 16%) minmax(0, 1fr) minmax(220px, 22%) 42px;
+      gap: 24px;
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .issue-row.is-hidden {
+      display: none !important;
+    }
+
+    .issue-row:last-child {
+      border-bottom: 0;
+    }
+
+    .issue-type {
+      align-self: start;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: fit-content;
+      padding: 5px 9px;
+      color: var(--teal-dark);
+      background: #dff1ed;
+      border-radius: 4px;
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .issue-type small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 600;
+    }
+
+    .issue-actions {
+      position: relative;
+      grid-column: -1;
+      grid-row: 1;
+      align-self: start;
+    }
+
+    .options-button {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .options-button:hover,
+    .options-button:focus-visible,
+    .issue-actions.is-open .options-button {
+      color: var(--teal-dark);
+      background: #e8f4f2;
+      border-color: var(--teal);
+      outline: none;
+    }
+
+    .options-menu {
+      position: absolute;
+      z-index: 5;
+      top: 38px;
+      right: 0;
+      display: none;
+      min-width: 190px;
+      padding: 5px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: 0 12px 28px rgba(22, 34, 48, .16);
+    }
+
+    .issue-actions.is-open .options-menu {
+      display: block;
+    }
+
+    .options-menu a {
+      display: block;
+      padding: 9px 10px;
+      color: var(--ink);
+      border-radius: 4px;
+      font-size: .82rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .options-menu a:hover,
+    .options-menu a:focus-visible {
+      color: var(--teal-dark);
+      background: #e8f4f2;
+      outline: none;
+    }
+
+    .issue-comment {
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .issue-comment p {
+      margin: 0 0 10px;
+    }
+
+    .issue-comment p:last-child {
+      margin-bottom: 0;
+    }
+
+    .issue-comment pre {
+      margin: 12px 0 0;
+      padding: 12px;
+      overflow-x: auto;
+      color: #eaf2f3;
+      background: #162230;
+      border-radius: 5px;
+    }
+
+    .issue-comment code {
+      padding: 2px 4px;
+      color: var(--teal-dark);
+      background: #e8f4f2;
+      border-radius: 3px;
+      font-size: .9em;
+    }
+
+    .issue-comment pre code {
+      padding: 0;
+      color: inherit;
+      background: transparent;
+    }
+
+    .issue-comment a {
+      color: var(--teal-dark);
+      font-weight: 700;
+    }
+
+    .issue-position {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      padding: 9px 12px;
+      color: var(--ink);
+      background: #f3f6f7;
+      border: 1px solid transparent;
+      border-left: 3px solid var(--yellow);
+      border-radius: 5px;
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    .issue-position:hover,
+    .issue-position:focus-visible {
+      border-color: var(--teal);
+      border-left-color: var(--teal);
+      background: #e8f4f2;
+      outline: none;
+    }
+
+    .issue-position.copied {
+      border-color: var(--teal);
+      color: var(--teal-dark);
+    }
+
+    .issue-file {
+      font: .8rem/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-weight: 700;
+    }
+
+    .issue-line {
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    .empty,
+    .error {
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+    }
+
+    .error {
+      color: #a12622;
+    }
+
+    .execution-link {
+      margin-top: 28px;
+      padding: 0;
+      color: var(--teal);
+      background: transparent;
+      border: 0;
+      font-weight: 800;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 0 0 24px;
+    }
+
+    .page-actions .execution-link {
+      margin-top: 0;
+      padding: 10px 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+
+    .page-actions .execution-link:hover {
+      border-color: var(--teal);
+      background: #e8f4f2;
+    }
+
+    .execution-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .execution-item {
+      padding: 16px 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--teal);
+      border-radius: 7px;
+    }
+
+    .execution-item.is-failed {
+      border-left-color: var(--coral);
+    }
+
+    .execution-main {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .execution-context {
+      font-weight: 800;
+    }
+
+    .execution-meta {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: .83rem;
+    }
+
+    .execution-status {
+      color: var(--teal-dark);
+      font-size: .8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .execution-item.is-failed .execution-status {
+      color: #a12622;
+    }
+
+    .execution-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .execution-filter {
+      min-width: 150px;
+      padding: 9px 10px;
+      color: var(--ink);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+
+    .execution-log {
+      max-height: calc(100vh - 230px);
+      overflow: auto;
+      margin-top: 20px;
+      padding: 18px;
+      color: #eaf2f3;
+      background: var(--ink);
+      border-radius: 6px;
+      font: .78rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 980px) {
+      .issue-row {
+        grid-template-columns: 170px minmax(0, 1fr) 42px;
+      }
+
+      .issue-position {
+        grid-column: 1 / -1;
+      }
+    }
+
     @media (max-width: 760px) {
-      .topbar { align-items: flex-start; flex-direction: column; padding: 16px 20px; }
-      .breadcrumbs { justify-content: flex-start; width: 100%; overflow-x: auto; }
-      .content { padding: 25px 20px 48px; }
-      .view-header { align-items: start; flex-direction: column; gap: 10px; }
-      .toolbar { align-items: stretch; flex-direction: column; }
-      .issue-row { grid-template-columns: 1fr 42px; gap: 10px; }
-      .issue-comment { grid-column: 1 / -1; }
-      .issue-position { grid-column: 1 / -1; }
-      .type-combobox, input { width: 100%; }
-      .pagination { align-items: stretch; flex-direction: column; }
-      .pagination-controls { justify-content: space-between; }
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 16px 20px;
+      }
+
+      .breadcrumbs {
+        justify-content: flex-start;
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .content {
+        padding: 25px 20px 48px;
+      }
+
+      .view-header {
+        align-items: start;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .issue-row {
+        grid-template-columns: 1fr 42px;
+        gap: 10px;
+      }
+
+      .issue-comment {
+        grid-column: 1 / -1;
+      }
+
+      .issue-position {
+        grid-column: 1 / -1;
+      }
+
+      .type-combobox,
+      input {
+        width: 100%;
+      }
+
+      .pagination {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .pagination-controls {
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
-<body>
-<div class="shell">
-  <header class="topbar">
-    <button id="brandHome" class="brand" type="button" aria-label="Voltar para a página inicial">ACR Dashboard</button>
-    <nav id="breadcrumbs" class="breadcrumbs" aria-label="Navegação"></nav>
-  </header>
-  <main class="content" id="app"><div class="empty">Carregando dados...</div></main>
-</div>
-<script>
-let dashboard = null;
-let currentProject = null;
-let currentBranch = null;
-let selectedExecutionLimit = 10;
-let selectedExecutionStatus = '';
-let selectedExecutionSearch = '';
-let executionSearchTimer = null;
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, character => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-  }[character]));
-}
-function setRoute(route) { window.location.hash = route; }
-function setBreadcrumbs(items) {
-  const breadcrumbs = document.getElementById('breadcrumbs');
-  breadcrumbs.innerHTML = items.map((item, index) => `${index ? '<span class="breadcrumb-separator">/</span>' : ''}<button class="breadcrumb${item.route ? ' is-link' : ''}" type="button" ${item.route ? `data-route="${item.route}"` : 'disabled'}>${escapeHtml(item.label)}</button>`).join('');
-  breadcrumbs.querySelectorAll('[data-route]').forEach(button => button.addEventListener('click', () => setRoute(button.dataset.route)));
-}
-function findGroup(id) { return dashboard.groups.find(group => group.id === Number(id)); }
-function findProject(group, id) { return group && group.projects.find(project => project.id === Number(id)); }
-function findBranch(project, id) { return project && project.branches.find(branch => branch.id === Number(id)); }
-function projectIssueCount(project) { return project.branches.reduce((total, branch) => total + branch.issues.length, 0); }
-function issueCardClass(issueCount) { return issueCount === 0 ? 'issue-low' : issueCount < 100 ? 'issue-medium' : 'issue-high'; }
-function stat(value, label) { return `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`; }
-function latestOutputLink(groupName, projectName, branchName) {
-  const query = new URLSearchParams({ group: groupName, project: projectName, branch: branchName });
-  return `<div class="issue-actions"><button class="options-button" type="button" aria-label="Mais opções" aria-expanded="false">&hellip;</button><div class="options-menu"><a href="/api/executions/latest/output?${query}" target="_blank" rel="noopener">Ver logs última execução</a></div></div>`;
-}
-function setupIssueActions(container) {
-  container.querySelectorAll('.issue-actions').forEach(actions => {
-    const button = actions.querySelector('.options-button');
-    button.addEventListener('click', event => {
-      event.stopPropagation();
-      document.querySelectorAll('.issue-actions.is-open').forEach(other => {
-        if (other !== actions) {
-          other.classList.remove('is-open');
-          other.querySelector('.options-button').setAttribute('aria-expanded', 'false');
-        }
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <button id="brandHome" class="brand" type="button" aria-label="Voltar para a página inicial">ACR
+        Dashboard</button>
+      <nav id="breadcrumbs" class="breadcrumbs" aria-label="Navegação"></nav>
+    </header>
+    <main class="content" id="app">
+      <div class="empty">Carregando dados...</div>
+    </main>
+  </div>
+  <script>
+    let dashboard = null;
+    let currentProject = null;
+    let currentBranch = null;
+    let selectedExecutionLimit = 10;
+    let selectedExecutionStatus = '';
+    let selectedExecutionSearch = '';
+    let executionSearchTimer = null;
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      }[character]));
+    }
+    function setRoute(route) { window.location.hash = route; }
+    function setBreadcrumbs(items) {
+      const breadcrumbs = document.getElementById('breadcrumbs');
+      breadcrumbs.innerHTML = items.map((item, index) => `${index ? '<span class="breadcrumb-separator">/</span>' : ''}<button class="breadcrumb${item.route ? ' is-link' : ''}" type="button" ${item.route ? `data-route="${item.route}"` : 'disabled'}>${escapeHtml(item.label)}</button>`).join('');
+      breadcrumbs.querySelectorAll('[data-route]').forEach(button => button.addEventListener('click', () => setRoute(button.dataset.route)));
+    }
+    function findGroup(id) { return dashboard.groups.find(group => group.id === Number(id)); }
+    function findProject(group, id) { return group && group.projects.find(project => project.id === Number(id)); }
+    function findBranch(project, id) { return project && project.branches.find(branch => branch.id === Number(id)); }
+    function projectIssueCount(project) { return project.branches.reduce((total, branch) => total + branch.issues.length, 0); }
+    function issueCardClass(issueCount) { return issueCount === 0 ? 'issue-low' : issueCount < 100 ? 'issue-medium' : 'issue-high'; }
+    function stat(value, label) { return `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`; }
+    function latestOutputLink(groupName, projectName, branchName) {
+      const query = new URLSearchParams({ group: groupName, project: projectName, branch: branchName });
+      return `<div class="issue-actions"><button class="options-button" type="button" aria-label="Mais opções" aria-expanded="false">&hellip;</button><div class="options-menu"><a href="/api/executions/latest/output?${query}" target="_blank" rel="noopener">Ver logs última execução</a></div></div>`;
+    }
+    function setupIssueActions(container) {
+      container.querySelectorAll('.issue-actions').forEach(actions => {
+        const button = actions.querySelector('.options-button');
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          document.querySelectorAll('.issue-actions.is-open').forEach(other => {
+            if (other !== actions) {
+              other.classList.remove('is-open');
+              other.querySelector('.options-button').setAttribute('aria-expanded', 'false');
+            }
+          });
+          const isOpen = actions.classList.toggle('is-open');
+          button.setAttribute('aria-expanded', isOpen);
+        });
       });
-      const isOpen = actions.classList.toggle('is-open');
-      button.setAttribute('aria-expanded', isOpen);
-    });
-  });
-}
-function renderMarkdown(markdown) {
-  const codeBlocks = [];
-  let source = String(markdown || '').replace(/\r/g, '').replace(/```([^\n]*)\n([\s\S]*?)```/g, (_, language, code) => {
-    const token = `@@CODE_BLOCK_${codeBlocks.length}@@`;
-    codeBlocks.push(`<pre><code class="language-${escapeHtml(language || 'text')}">${escapeHtml(code)}</code></pre>`);
-    return token;
-  });
-  let rendered = escapeHtml(source)
-    .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
-    .replace(/&lt;(\/?)b&gt;/gi, '<$1strong>')
-    .replace(/&lt;(\/?)strong&gt;/gi, '<$1strong>')
-    .replace(/&lt;(\/?)i&gt;/gi, '<$1em>')
-    .replace(/&lt;(\/?)em&gt;/gi, '<$1em>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
-    .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/__([^_\n]+)__/g, '<strong>$1</strong>')
-    .replace(/^### (.+)$/gm, '<strong>$1</strong>')
-    .replace(/^## (.+)$/gm, '<strong>$1</strong>')
-    .replace(/^# (.+)$/gm, '<strong>$1</strong>')
-    .replace(/^[*-] (.+)$/gm, '&bull; $1')
-    .replace(/\n\n+/g, '<br><br>')
-    .replace(/\n/g, '<br>');
-  codeBlocks.forEach((block, index) => {
-    rendered = rendered.replace(`@@CODE_BLOCK_${index}@@`, block);
-  });
-  return rendered;
-}
-function renderHome() {
-  setBreadcrumbs([]);
-  const projectCount = dashboard.groups.reduce((total, group) => total + group.projects.length, 0);
-  const issueCount = dashboard.groups.reduce((total, group) => total + group.projects.reduce((groupTotal, project) => groupTotal + projectIssueCount(project), 0), 0);
-  const groupCards = dashboard.groups.map(group => {
-    const groupIssueCount = group.projects.reduce((total, project) => total + projectIssueCount(project), 0);
-    return `<button class="project-card ${issueCardClass(groupIssueCount)}" data-group="${group.id}" type="button">
+    }
+    function renderMarkdown(markdown) {
+      const codeBlocks = [];
+      let source = String(markdown || '').replace(/\r/g, '').replace(/```([^\n]*)\n([\s\S]*?)```/g, (_, language, code) => {
+        const token = `@@CODE_BLOCK_${codeBlocks.length}@@`;
+        codeBlocks.push(`<pre><code class="language-${escapeHtml(language || 'text')}">${escapeHtml(code)}</code></pre>`);
+        return token;
+      });
+      let rendered = escapeHtml(source)
+        .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
+        .replace(/&lt;(\/?)b&gt;/gi, '<$1strong>')
+        .replace(/&lt;(\/?)strong&gt;/gi, '<$1strong>')
+        .replace(/&lt;(\/?)i&gt;/gi, '<$1em>')
+        .replace(/&lt;(\/?)em&gt;/gi, '<$1em>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+        .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/__([^_\n]+)__/g, '<strong>$1</strong>')
+        .replace(/^### (.+)$/gm, '<strong>$1</strong>')
+        .replace(/^## (.+)$/gm, '<strong>$1</strong>')
+        .replace(/^# (.+)$/gm, '<strong>$1</strong>')
+        .replace(/^[*-] (.+)$/gm, '&bull; $1')
+        .replace(/\n\n+/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+      codeBlocks.forEach((block, index) => {
+        rendered = rendered.replace(`@@CODE_BLOCK_${index}@@`, block);
+      });
+      return rendered;
+    }
+    function renderHome() {
+      setBreadcrumbs([]);
+      const projectCount = dashboard.groups.reduce((total, group) => total + group.projects.length, 0);
+      const issueCount = dashboard.groups.reduce((total, group) => total + group.projects.reduce((groupTotal, project) => groupTotal + projectIssueCount(project), 0), 0);
+      const groupCards = dashboard.groups.map(group => {
+        const groupIssueCount = group.projects.reduce((total, project) => total + projectIssueCount(project), 0);
+        return `<button class="project-card ${issueCardClass(groupIssueCount)}" data-group="${group.id}" type="button">
     <div class="card-kicker">Grupo</div><div class="card-title">${escapeHtml(group.name)}</div>
     <div class="card-meta"><span>${group.projects.length} projeto(s) · ${groupIssueCount} issues</span><span class="card-arrow">→</span></div>
   </button>`;
-  }).join('');
-  document.getElementById('app').innerHTML = `<div class="view-header"><div><div class="eyebrow">Workspace</div><h2>Grupos</h2><p>Escolha um grupo para ver os projetos relacionados.</p></div></div>
+      }).join('');
+      document.getElementById('app').innerHTML = `<div class="view-header"><div><div class="eyebrow">Workspace</div><h2>Grupos</h2><p>Escolha um grupo para ver os projetos relacionados.</p></div></div>
     <div class="stat-strip">${stat(dashboard.groups.length, 'grupos')}${stat(projectCount, 'projetos')}${stat(issueCount, 'issues abertas')}</div>
     <div class="page-actions"><button class="execution-link" id="executionsLink" type="button">Ver últimas execuções →</button></div><div class="card-grid">${groupCards || '<div class="empty">Nenhum grupo cadastrado.</div>'}</div>`;
-  document.querySelectorAll('[data-group]').forEach(card => card.addEventListener('click', () => setRoute(`/group/${card.dataset.group}`)));
-  document.getElementById('executionsLink').addEventListener('click', () => setRoute('/executions'));
-}
-function formatExecutionDate(value) {
-  return new Date(value).toLocaleString('pt-BR');
-}
-function renderExecutions() {
-  setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: 'Últimas execuções' }]);
-  const executions = dashboard.executions || [];
-  const statusFilter = arguments[0] ?? selectedExecutionStatus;
-  const filteredExecutions = executions;
-  const items = filteredExecutions.map(execution => `<article class="execution-item${execution.status === 'failed' ? ' is-failed' : ''}">
+      document.querySelectorAll('[data-group]').forEach(card => card.addEventListener('click', () => setRoute(`/group/${card.dataset.group}`)));
+      document.getElementById('executionsLink').addEventListener('click', () => setRoute('/executions'));
+    }
+    function formatExecutionDate(value) {
+      return new Date(value).toLocaleString('pt-BR');
+    }
+    function renderExecutions() {
+      setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: 'Últimas execuções' }]);
+      const executions = dashboard.executions || [];
+      const statusFilter = arguments[0] ?? selectedExecutionStatus;
+      const filteredExecutions = executions;
+      const items = filteredExecutions.map(execution => `<article class="execution-item${execution.status === 'failed' ? ' is-failed' : ''}">
     <div class="execution-main"><span class="execution-context">${escapeHtml(execution.group)} / ${escapeHtml(execution.project)} / ${escapeHtml(execution.branch)}</span><span class="execution-status">${execution.status === 'success' ? 'Sucesso' : 'Falhou'}</span></div>
     <div class="execution-meta">Início: ${formatExecutionDate(execution.started_at)} · Fim: ${formatExecutionDate(execution.finished_at)} · Duração: ${Number(execution.duration_seconds).toFixed(2)}s</div>
     <button class="execution-link" data-execution="${execution.id}" type="button">Ver output →</button>
   </article>`).join('');
-  document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Últimas execuções</h2><p>Escolha quantas execuções recentes deseja consultar.</p></div></div><div class="execution-toolbar"><span class="execution-meta">${filteredExecutions.length} execução(ões) exibidas</span><div class="filter-group"><input class="execution-filter" id="executionSearch" type="search" value="${escapeHtml(selectedExecutionSearch)}" placeholder="Buscar projeto, grupo ou branch" aria-label="Buscar execução"><select class="execution-filter" id="executionStatus" aria-label="Status da execução"><option value="" ${statusFilter === '' ? 'selected' : ''}>Todos os status</option><option value="success" ${statusFilter === 'success' ? 'selected' : ''}>Sucesso</option><option value="failed" ${statusFilter === 'failed' ? 'selected' : ''}>Falhou</option></select><select class="execution-filter" id="executionLimit" aria-label="Quantidade de execuções"><option value="10" ${selectedExecutionLimit === 10 ? 'selected' : ''}>Últimas 10</option><option value="25" ${selectedExecutionLimit === 25 ? 'selected' : ''}>Últimas 25</option><option value="50" ${selectedExecutionLimit === 50 ? 'selected' : ''}>Últimas 50</option><option value="100" ${selectedExecutionLimit === 100 ? 'selected' : ''}>Últimas 100</option></select></div></div><div class="execution-list">${items || '<div class="empty">Nenhuma execução registrada.</div>'}</div>`;
-  document.getElementById('executionStatus').addEventListener('change', event => renderExecutions(event.target.value));
-  document.getElementById('executionStatus').addEventListener('change', event => { selectedExecutionStatus = event.target.value; loadExecutions(selectedExecutionLimit, selectedExecutionStatus); });
-  document.getElementById('executionLimit').addEventListener('change', event => { selectedExecutionLimit = Number(event.target.value); loadExecutions(selectedExecutionLimit, selectedExecutionStatus); });
-  document.getElementById('executionSearch').addEventListener('input', event => { selectedExecutionSearch = event.target.value; clearTimeout(executionSearchTimer); executionSearchTimer = setTimeout(() => loadExecutions(selectedExecutionLimit, selectedExecutionStatus, selectedExecutionSearch), 250); });
-  document.querySelectorAll('[data-execution]').forEach(button => button.addEventListener('click', () => window.open(`/api/executions/${button.dataset.execution}/output`, '_blank')));
-}
-function loadExecutions(limit, status = selectedExecutionStatus, search = selectedExecutionSearch) {
-  selectedExecutionLimit = limit;
-  selectedExecutionSearch = search;
-  fetch(`/api/dashboard?limit=${limit}&status=${encodeURIComponent(status)}&search=${encodeURIComponent(search)}`).then(response => response.json()).then(data => { dashboard.executions = data.executions; renderExecutions(); });
-}
-function renderExecutionLog(execution) {
-  setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: 'Últimas execuções', route: '/executions' }, { label: 'Output' }]);
-  const status = execution.status === 'success' ? 'Sucesso' : 'Falhou';
-  document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Output da execução</h2><p>${escapeHtml(execution.group)} / ${escapeHtml(execution.project)} / ${escapeHtml(execution.branch)} · ${status}</p></div></div><div class="execution-meta">Início: ${formatExecutionDate(execution.started_at)} · Fim: ${formatExecutionDate(execution.finished_at)} · Duração: ${Number(execution.duration_seconds).toFixed(2)}s</div><pre class="execution-log">${escapeHtml(execution.output || 'Sem output')}</pre>`;
-}
-function renderGroup(group) {
-  setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name }]);
-  const projects = [...group.projects].sort((firstProject, secondProject) => {
-    const issueDifference = projectIssueCount(secondProject) - projectIssueCount(firstProject);
-    return issueDifference || firstProject.name.localeCompare(secondProject.name);
-  });
-  const cards = projects.map(project => `<a class="project-card ${issueCardClass(projectIssueCount(project))}" data-project="${project.id}" href="#/group/${group.id}/project/${project.id}">
+      document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Últimas execuções</h2><p>Escolha quantas execuções recentes deseja consultar.</p></div></div><div class="execution-toolbar"><span class="execution-meta">${filteredExecutions.length} execução(ões) exibidas</span><div class="filter-group"><input class="execution-filter" id="executionSearch" type="search" value="${escapeHtml(selectedExecutionSearch)}" placeholder="Buscar projeto, grupo ou branch" aria-label="Buscar execução"><select class="execution-filter" id="executionStatus" aria-label="Status da execução"><option value="" ${statusFilter === '' ? 'selected' : ''}>Todos os status</option><option value="success" ${statusFilter === 'success' ? 'selected' : ''}>Sucesso</option><option value="failed" ${statusFilter === 'failed' ? 'selected' : ''}>Falhou</option></select><select class="execution-filter" id="executionLimit" aria-label="Quantidade de execuções"><option value="10" ${selectedExecutionLimit === 10 ? 'selected' : ''}>Últimas 10</option><option value="25" ${selectedExecutionLimit === 25 ? 'selected' : ''}>Últimas 25</option><option value="50" ${selectedExecutionLimit === 50 ? 'selected' : ''}>Últimas 50</option><option value="100" ${selectedExecutionLimit === 100 ? 'selected' : ''}>Últimas 100</option></select></div></div><div class="execution-list">${items || '<div class="empty">Nenhuma execução registrada.</div>'}</div>`;
+      document.getElementById('executionStatus').addEventListener('change', event => renderExecutions(event.target.value));
+      document.getElementById('executionStatus').addEventListener('change', event => { selectedExecutionStatus = event.target.value; loadExecutions(selectedExecutionLimit, selectedExecutionStatus); });
+      document.getElementById('executionLimit').addEventListener('change', event => { selectedExecutionLimit = Number(event.target.value); loadExecutions(selectedExecutionLimit, selectedExecutionStatus); });
+      document.getElementById('executionSearch').addEventListener('input', event => { selectedExecutionSearch = event.target.value; clearTimeout(executionSearchTimer); executionSearchTimer = setTimeout(() => loadExecutions(selectedExecutionLimit, selectedExecutionStatus, selectedExecutionSearch), 250); });
+      document.querySelectorAll('[data-execution]').forEach(button => button.addEventListener('click', () => window.open(`/api/executions/${button.dataset.execution}/output`, '_blank')));
+    }
+    function loadExecutions(limit, status = selectedExecutionStatus, search = selectedExecutionSearch) {
+      selectedExecutionLimit = limit;
+      selectedExecutionSearch = search;
+      fetch(`/api/dashboard?limit=${limit}&status=${encodeURIComponent(status)}&search=${encodeURIComponent(search)}`).then(response => response.json()).then(data => { dashboard.executions = data.executions; renderExecutions(); });
+    }
+    function renderExecutionLog(execution) {
+      setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: 'Últimas execuções', route: '/executions' }, { label: 'Output' }]);
+      const status = execution.status === 'success' ? 'Sucesso' : 'Falhou';
+      document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Output da execução</h2><p>${escapeHtml(execution.group)} / ${escapeHtml(execution.project)} / ${escapeHtml(execution.branch)} · ${status}</p></div></div><div class="execution-meta">Início: ${formatExecutionDate(execution.started_at)} · Fim: ${formatExecutionDate(execution.finished_at)} · Duração: ${Number(execution.duration_seconds).toFixed(2)}s</div><pre class="execution-log">${escapeHtml(execution.output || 'Sem output')}</pre>`;
+    }
+    function renderGroup(group) {
+      setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name }]);
+      const projects = [...group.projects].sort((firstProject, secondProject) => {
+        const issueDifference = projectIssueCount(secondProject) - projectIssueCount(firstProject);
+        return issueDifference || firstProject.name.localeCompare(secondProject.name);
+      });
+      const cards = projects.map(project => `<a class="project-card ${issueCardClass(projectIssueCount(project))}" data-project="${project.id}" href="#/group/${group.id}/project/${project.id}">
     <div class="card-kicker">Projeto</div><div class="card-title">${escapeHtml(project.name)}</div>
     <div class="card-meta"><span>${project.branches.length} branch(es) · ${projectIssueCount(project)} issues</span><span class="card-arrow">→</span></div>
   </a>`).join('');
-  document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Projetos</h2><p>Projetos do grupo ${escapeHtml(group.name)}.</p></div></div>
+      document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Projetos</h2><p>Projetos do grupo ${escapeHtml(group.name)}.</p></div></div>
     <div class="stat-strip">${stat(projects.length, 'projetos')}${stat(projects.reduce((total, project) => total + projectIssueCount(project), 0), 'issues no grupo')}</div>
     <div class="page-actions"><button class="execution-link" id="groupIssuesLink" type="button">Ver issues do grupo →</button></div><div class="card-grid">${cards || '<div class="empty">Nenhum projeto cadastrado neste grupo.</div>'}</div>`;
-  document.getElementById('groupIssuesLink').addEventListener('click', () => setRoute(`/group/${group.id}/issues`));
-  document.querySelectorAll('[data-project]').forEach(card => card.addEventListener('click', event => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    setRoute(card.getAttribute('href').slice(1));
-  }));
-}
-function renderProject(group, project) {
-  setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name, route: `/group/${group.id}` }, { label: project.name }]);
-  currentProject = project;
-  const cards = project.branches.map(branch => `<button class="branch-card ${issueCardClass(branch.issues.length)}" data-branch="${branch.id}" type="button">
+      document.getElementById('groupIssuesLink').addEventListener('click', () => setRoute(`/group/${group.id}/issues`));
+      document.querySelectorAll('[data-project]').forEach(card => card.addEventListener('click', event => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        setRoute(card.getAttribute('href').slice(1));
+      }));
+    }
+    function renderProject(group, project) {
+      setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name, route: `/group/${group.id}` }, { label: project.name }]);
+      currentProject = project;
+      const cards = project.branches.map(branch => `<button class="branch-card ${issueCardClass(branch.issues.length)}" data-branch="${branch.id}" type="button">
     <div class="card-kicker">Branch</div><div class="card-title">${escapeHtml(branch.name)}</div>
     <div class="card-meta"><span>${branch.issues.length} issue(s)</span><span class="card-arrow">→</span></div>
   </button>`).join('');
-  document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Branches</h2><p>Selecione uma branch para revisar os apontamentos encontrados.</p></div></div>
+      document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Branches</h2><p>Selecione uma branch para revisar os apontamentos encontrados.</p></div></div>
     <div class="stat-strip">${stat(project.branches.length, 'branches')}${stat(projectIssueCount(project), 'issues neste projeto')}</div>
     <div class="card-grid">${cards || '<div class="empty">Nenhuma branch cadastrada.</div>'}</div>`;
-  document.querySelectorAll('[data-branch]').forEach(card => card.addEventListener('click', () => setRoute(`/group/${group.id}/project/${project.id}/branch/${card.dataset.branch}`)));
-}
-function renderGroupIssues(group) {
-  setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name, route: `/group/${group.id}` }, { label: 'Issues do grupo' }]);
-  const branchNames = [...new Set(group.projects.flatMap(project => project.branches.map(branch => branch.name)))].sort();
-  const projectOptions = group.projects.map(project => `<option value="${project.id}">${escapeHtml(project.name)}</option>`).join('');
-  const branchOptions = branchNames.map((branch, index) => `<option value="${escapeHtml(branch)}"${index === 0 ? ' selected' : ''}>${escapeHtml(branch)}</option>`).join('');
-  const branchPlaceholder = branchNames.length ? '' : '<option value="" selected>Selecione uma branch *</option>';
-  document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Issues do grupo</h2><p>Selecione uma branch para consultar issues de todos os projetos do grupo.</p></div></div>
+      document.querySelectorAll('[data-branch]').forEach(card => card.addEventListener('click', () => setRoute(`/group/${group.id}/project/${project.id}/branch/${card.dataset.branch}`)));
+    }
+    function renderGroupIssues(group) {
+      setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name, route: `/group/${group.id}` }, { label: 'Issues do grupo' }]);
+      const branchNames = [...new Set(group.projects.flatMap(project => project.branches.map(branch => branch.name)))].sort();
+      const projectOptions = group.projects.map(project => `<option value="${project.id}">${escapeHtml(project.name)}</option>`).join('');
+      const branchOptions = branchNames.map((branch, index) => `<option value="${escapeHtml(branch)}"${index === 0 ? ' selected' : ''}>${escapeHtml(branch)}</option>`).join('');
+      const branchPlaceholder = branchNames.length ? '' : '<option value="" selected>Selecione uma branch *</option>';
+      document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Issues do grupo</h2><p>Selecione uma branch para consultar issues de todos os projetos do grupo.</p></div></div>
     <div class="toolbar"><div class="filter-group"><select class="execution-filter" id="groupBranchFilter" aria-label="Branch" required>${branchPlaceholder}${branchOptions}</select><select class="execution-filter" id="groupProjectFilter" aria-label="Projeto"><option value="">Todos os projetos</option>${projectOptions}</select><div class="type-combobox" id="groupTypeCombobox"><button class="type-trigger" id="groupTypeButton" type="button" aria-expanded="false"><span id="groupTypeLabel">Todos os tipos</span><span class="type-chevron" aria-hidden="true">⌄</span></button><div class="type-menu" id="groupTypeMenu" role="listbox"><button class="type-option is-selected" type="button" data-value="">Todos os tipos</button></div></div><input id="groupTextFilter" type="search" placeholder="Buscar na descrição"></div><span class="issue-count" id="groupIssueCount">${branchNames.length ? 'Carregando...' : 'Selecione uma branch'}</span></div>
     <div class="issue-list" id="groupIssueList"><div class="empty">Selecione uma branch para começar.</div></div><div class="pagination" id="groupPagination"></div>`;
-  const branchFilter = document.getElementById('groupBranchFilter');
-  const projectFilter = document.getElementById('groupProjectFilter');
-  const typeCombobox = document.getElementById('groupTypeCombobox');
-  const typeButton = document.getElementById('groupTypeButton');
-  const typeLabel = document.getElementById('groupTypeLabel');
-  let selectedType = '';
-  let currentPage = 1;
-  let pageSize = 50;
-  const getIssues = () => {
-    const branchName = branchFilter.value;
-    const projectId = projectFilter.value;
-    if (!branchName) return [];
-    return group.projects.filter(project => !projectId || String(project.id) === projectId).flatMap(project => project.branches.filter(branch => branch.name === branchName).flatMap(branch => branch.issues.map(issue => ({ ...issue, projectName: project.name }))));
-  };
-  const updateTypes = issues => {
-    const counts = issues.reduce((result, issue) => { result[issue.type] = (result[issue.type] || 0) + 1; return result; }, {});
-    const types = Object.keys(counts).sort((first, second) => counts[second] - counts[first] || first.localeCompare(second));
-    typeCombobox.querySelector('.type-menu').innerHTML = [''].concat(types).map(type => `<button class="type-option${type === selectedType ? ' is-selected' : ''}" type="button" data-value="${escapeHtml(type)}">${escapeHtml(type ? `${type} (${counts[type]})` : 'Todos os tipos')}</button>`).join('');
-    typeCombobox.querySelectorAll('.type-option').forEach(option => option.addEventListener('click', () => { selectedType = option.dataset.value.toLowerCase(); typeLabel.textContent = option.textContent; typeCombobox.classList.remove('is-open'); typeButton.setAttribute('aria-expanded', 'false'); updateTypes(getIssues()); renderPage(); }));
-  };
-  const renderPage = () => {
-    const text = document.getElementById('groupTextFilter').value.toLowerCase();
-    const filtered = getIssues().filter(issue => (!selectedType || issue.type.toLowerCase() === selectedType) && (!text || `${issue.comment} ${issue.position?.path || ''}`.toLowerCase().includes(text)));
-    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-    currentPage = Math.min(currentPage, totalPages);
-    const start = (currentPage - 1) * pageSize;
-    const pageIssues = filtered.slice(start, start + pageSize);
-    document.getElementById('groupIssueCount').textContent = `${filtered.length} issue(s)`;
-    document.getElementById('groupIssueList').innerHTML = pageIssues.length ? pageIssues.map(issue => `<article class="issue-row" data-type="${escapeHtml(issue.type)}"><div class="issue-type">${escapeHtml(issue.type)}<small>${escapeHtml(issue.projectName)}</small></div><div class="issue-comment">${renderMarkdown(issue.comment)}</div><button class="issue-position" type="button" data-path="${escapeHtml(issue.position?.path || '')}" title="Clique para copiar o path">${formatIssueLocation(issue)}</button>${latestOutputLink(group.name, issue.projectName, branchFilter.value)}</article>`).join('') : `<div class="empty">${branchFilter.value ? 'Nenhuma issue encontrada com esses filtros.' : 'Selecione uma branch para começar.'}</div>`;
-    document.querySelectorAll('#groupIssueList .issue-position').forEach(position => position.addEventListener('click', () => copyPath(position)));
-    setupIssueActions(document.getElementById('groupIssueList'));
-    document.getElementById('groupPagination').innerHTML = filtered.length ? `<span class="pagination-summary">Mostrando ${start + 1}-${Math.min(start + pageSize, filtered.length)} de ${filtered.length}</span><div class="pagination-controls"><button id="groupPrevious" type="button" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button><span>Página ${currentPage} de ${totalPages}</span><button id="groupNext" type="button" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button><select id="groupPageSize" aria-label="Issues por página"><option value="25">25 / página</option><option value="50" selected>50 / página</option><option value="100">100 / página</option></select></div>` : '';
-    if (filtered.length) { document.getElementById('groupPrevious').addEventListener('click', () => { currentPage--; renderPage(); }); document.getElementById('groupNext').addEventListener('click', () => { currentPage++; renderPage(); }); document.getElementById('groupPageSize').addEventListener('change', event => { pageSize = Number(event.target.value); currentPage = 1; renderPage(); }); }
-  };
-  const refresh = () => { currentPage = 1; selectedType = ''; typeLabel.textContent = 'Todos os tipos'; updateTypes(getIssues()); renderPage(); };
-  typeButton.addEventListener('click', () => { const open = typeCombobox.classList.toggle('is-open'); typeButton.setAttribute('aria-expanded', open); });
-  branchFilter.addEventListener('change', refresh); projectFilter.addEventListener('change', refresh); document.getElementById('groupTextFilter').addEventListener('input', renderPage);
-  document.addEventListener('click', event => { if (!typeCombobox.contains(event.target)) { typeCombobox.classList.remove('is-open'); typeButton.setAttribute('aria-expanded', 'false'); } });
-  if (branchNames.length) refresh();
-}
-function renderBranch(group, project, branch) {
-  setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name, route: `/group/${group.id}` }, { label: project.name, route: `/group/${group.id}/project/${project.id}` }, { label: branch.name }]);
-  currentBranch = branch;
-  const typeCounts = branch.issues.reduce((counts, issue) => {
-    counts[issue.type] = (counts[issue.type] || 0) + 1;
-    return counts;
-  }, {});
-  const types = Object.keys(typeCounts).sort((firstType, secondType) => {
-    return typeCounts[secondType] - typeCounts[firstType] || firstType.localeCompare(secondType);
-  });
-  const options = [''].concat(types).map(type => {
-    const label = type ? `${type} (${typeCounts[type]})` : 'Todos os tipos';
-    return `<button class="type-option${type === '' ? ' is-selected' : ''}" type="button" data-value="${escapeHtml(type)}">${escapeHtml(label)}</button>`;
-  }).join('');
-  document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Issues</h2><p>Filtre os apontamentos desta branch por tipo ou texto.</p></div></div>
+      const branchFilter = document.getElementById('groupBranchFilter');
+      const projectFilter = document.getElementById('groupProjectFilter');
+      const typeCombobox = document.getElementById('groupTypeCombobox');
+      const typeButton = document.getElementById('groupTypeButton');
+      const typeLabel = document.getElementById('groupTypeLabel');
+      let selectedType = '';
+      let currentPage = 1;
+      let pageSize = 50;
+      const getIssues = () => {
+        const branchName = branchFilter.value;
+        const projectId = projectFilter.value;
+        if (!branchName) return [];
+        return group.projects.filter(project => !projectId || String(project.id) === projectId).flatMap(project => project.branches.filter(branch => branch.name === branchName).flatMap(branch => branch.issues.map(issue => ({ ...issue, projectName: project.name }))));
+      };
+      const updateTypes = issues => {
+        const counts = issues.reduce((result, issue) => { result[issue.type] = (result[issue.type] || 0) + 1; return result; }, {});
+        const types = Object.keys(counts).sort((first, second) => counts[second] - counts[first] || first.localeCompare(second));
+        typeCombobox.querySelector('.type-menu').innerHTML = [''].concat(types).map(type => `<button class="type-option${type === selectedType ? ' is-selected' : ''}" type="button" data-value="${escapeHtml(type)}">${escapeHtml(type ? `${type} (${counts[type]})` : 'Todos os tipos')}</button>`).join('');
+        typeCombobox.querySelectorAll('.type-option').forEach(option => option.addEventListener('click', () => { selectedType = option.dataset.value.toLowerCase(); typeLabel.textContent = option.textContent; typeCombobox.classList.remove('is-open'); typeButton.setAttribute('aria-expanded', 'false'); updateTypes(getIssues()); renderPage(); }));
+      };
+      const renderPage = () => {
+        const text = document.getElementById('groupTextFilter').value.toLowerCase();
+        const filtered = getIssues().filter(issue => (!selectedType || issue.type.toLowerCase() === selectedType) && (!text || `${issue.comment} ${issue.position?.path || ''}`.toLowerCase().includes(text)));
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        currentPage = Math.min(currentPage, totalPages);
+        const start = (currentPage - 1) * pageSize;
+        const pageIssues = filtered.slice(start, start + pageSize);
+        document.getElementById('groupIssueCount').textContent = `${filtered.length} issue(s)`;
+        document.getElementById('groupIssueList').innerHTML = pageIssues.length ? pageIssues.map(issue => `<article class="issue-row" data-type="${escapeHtml(issue.type)}"><div class="issue-type">${escapeHtml(issue.type)}<small>${escapeHtml(issue.projectName)}</small></div><div class="issue-comment">${renderMarkdown(issue.comment)}</div><button class="issue-position" type="button" data-path="${escapeHtml(issue.position?.path || '')}" title="Clique para copiar o path">${formatIssueLocation(issue)}</button>${latestOutputLink(group.name, issue.projectName, branchFilter.value)}</article>`).join('') : `<div class="empty">${branchFilter.value ? 'Nenhuma issue encontrada com esses filtros.' : 'Selecione uma branch para começar.'}</div>`;
+        document.querySelectorAll('#groupIssueList .issue-position').forEach(position => position.addEventListener('click', () => copyPath(position)));
+        setupIssueActions(document.getElementById('groupIssueList'));
+        document.getElementById('groupPagination').innerHTML = filtered.length ? `<span class="pagination-summary">Mostrando ${start + 1}-${Math.min(start + pageSize, filtered.length)} de ${filtered.length}</span><div class="pagination-controls"><button id="groupPrevious" type="button" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button><span>Página ${currentPage} de ${totalPages}</span><button id="groupNext" type="button" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button><select id="groupPageSize" aria-label="Issues por página"><option value="25">25 / página</option><option value="50" selected>50 / página</option><option value="100">100 / página</option></select></div>` : '';
+        if (filtered.length) { document.getElementById('groupPrevious').addEventListener('click', () => { currentPage--; renderPage(); }); document.getElementById('groupNext').addEventListener('click', () => { currentPage++; renderPage(); }); document.getElementById('groupPageSize').addEventListener('change', event => { pageSize = Number(event.target.value); currentPage = 1; renderPage(); }); }
+      };
+      const refresh = () => { currentPage = 1; selectedType = ''; typeLabel.textContent = 'Todos os tipos'; updateTypes(getIssues()); renderPage(); };
+      typeButton.addEventListener('click', () => { const open = typeCombobox.classList.toggle('is-open'); typeButton.setAttribute('aria-expanded', open); });
+      branchFilter.addEventListener('change', refresh); projectFilter.addEventListener('change', refresh); document.getElementById('groupTextFilter').addEventListener('input', renderPage);
+      document.addEventListener('click', event => { if (!typeCombobox.contains(event.target)) { typeCombobox.classList.remove('is-open'); typeButton.setAttribute('aria-expanded', 'false'); } });
+      if (branchNames.length) refresh();
+    }
+    function renderBranch(group, project, branch) {
+      setBreadcrumbs([{ label: 'Grupos', route: '/' }, { label: group.name, route: `/group/${group.id}` }, { label: project.name, route: `/group/${group.id}/project/${project.id}` }, { label: branch.name }]);
+      currentBranch = branch;
+      const typeCounts = branch.issues.reduce((counts, issue) => {
+        counts[issue.type] = (counts[issue.type] || 0) + 1;
+        return counts;
+      }, {});
+      const types = Object.keys(typeCounts).sort((firstType, secondType) => {
+        return typeCounts[secondType] - typeCounts[firstType] || firstType.localeCompare(secondType);
+      });
+      const options = [''].concat(types).map(type => {
+        const label = type ? `${type} (${typeCounts[type]})` : 'Todos os tipos';
+        return `<button class="type-option${type === '' ? ' is-selected' : ''}" type="button" data-value="${escapeHtml(type)}">${escapeHtml(label)}</button>`;
+      }).join('');
+      document.getElementById('app').innerHTML = `<div class="view-header"><div><h2>Issues</h2><p>Filtre os apontamentos desta branch por tipo ou texto.</p></div></div>
     <div class="toolbar"><div class="filter-group"><div class="type-combobox" id="typeCombobox"><button class="type-trigger" id="typeFilterButton" type="button" aria-expanded="false" aria-haspopup="listbox"><span id="typeFilterLabel">Todos os tipos</span><span class="type-chevron" aria-hidden="true">⌄</span></button><div class="type-menu" id="typeFilterMenu" role="listbox">${options}</div></div><input id="textFilter" type="search" placeholder="Buscar em issues"></div><span class="issue-count" id="issueCount">${branch.issues.length} issue(s)</span></div>
     <div class="issue-list" id="issueList"></div><div class="pagination" id="pagination"></div>`;
-  const combobox = document.getElementById('typeCombobox');
-  const trigger = document.getElementById('typeFilterButton');
-  const label = document.getElementById('typeFilterLabel');
-  let selectedType = '';
-  let currentPage = 1;
-  let pageSize = 50;
-  trigger.addEventListener('click', () => { const isOpen = combobox.classList.toggle('is-open'); trigger.setAttribute('aria-expanded', isOpen); });
-  combobox.querySelectorAll('.type-option').forEach(option => option.addEventListener('click', () => { selectedType = option.dataset.value.toLowerCase(); label.textContent = option.textContent; combobox.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); combobox.querySelectorAll('.type-option').forEach(item => item.classList.toggle('is-selected', item === option)); filter(); }));
-  const renderPage = filteredIssues => {
-    const totalPages = Math.max(1, Math.ceil(filteredIssues.length / pageSize));
-    currentPage = Math.min(currentPage, totalPages);
-    const start = (currentPage - 1) * pageSize;
-    const pageIssues = filteredIssues.slice(start, start + pageSize);
-    const issueList = document.getElementById('issueList');
-    issueList.innerHTML = pageIssues.length ? pageIssues.map(issue => `<article class="issue-row" data-type="${escapeHtml(issue.type)}">
+      const combobox = document.getElementById('typeCombobox');
+      const trigger = document.getElementById('typeFilterButton');
+      const label = document.getElementById('typeFilterLabel');
+      let selectedType = '';
+      let currentPage = 1;
+      let pageSize = 50;
+      trigger.addEventListener('click', () => { const isOpen = combobox.classList.toggle('is-open'); trigger.setAttribute('aria-expanded', isOpen); });
+      combobox.querySelectorAll('.type-option').forEach(option => option.addEventListener('click', () => { selectedType = option.dataset.value.toLowerCase(); label.textContent = option.textContent; combobox.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); combobox.querySelectorAll('.type-option').forEach(item => item.classList.toggle('is-selected', item === option)); filter(); }));
+      const renderPage = filteredIssues => {
+        const totalPages = Math.max(1, Math.ceil(filteredIssues.length / pageSize));
+        currentPage = Math.min(currentPage, totalPages);
+        const start = (currentPage - 1) * pageSize;
+        const pageIssues = filteredIssues.slice(start, start + pageSize);
+        const issueList = document.getElementById('issueList');
+        issueList.innerHTML = pageIssues.length ? pageIssues.map(issue => `<article class="issue-row" data-type="${escapeHtml(issue.type)}">
       <div class="issue-type">${escapeHtml(issue.type)}</div><div class="issue-comment">${renderMarkdown(issue.comment)}</div><button class="issue-position" type="button" data-path="${escapeHtml(issue.position?.path || '')}" title="Clique para copiar o path">${formatIssueLocation(issue)}</button>${latestOutputLink(group.name, project.name, branch.name)}
     </article>`).join('') : '<div class="empty">Nenhuma issue encontrada.</div>';
-    issueList.querySelectorAll('.issue-position').forEach(position => position.addEventListener('click', () => copyPath(position)));
-    setupIssueActions(issueList);
-    document.getElementById('issueCount').textContent = `${filteredIssues.length} issue(s)`;
-    document.getElementById('pagination').innerHTML = filteredIssues.length ? `<span class="pagination-summary">Mostrando ${start + 1}-${Math.min(start + pageSize, filteredIssues.length)} de ${filteredIssues.length}</span><div class="pagination-controls"><button id="previousPage" type="button" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button><span>Página ${currentPage} de ${totalPages}</span><button id="nextPage" type="button" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button><select id="pageSize" aria-label="Issues por página"><option value="25" ${pageSize === 25 ? 'selected' : ''}>25 / página</option><option value="50" ${pageSize === 50 ? 'selected' : ''}>50 / página</option><option value="100" ${pageSize === 100 ? 'selected' : ''}>100 / página</option></select></div>` : '';
-    if (filteredIssues.length) {
-      document.getElementById('previousPage').addEventListener('click', () => { currentPage--; renderPage(filteredIssues); });
-      document.getElementById('nextPage').addEventListener('click', () => { currentPage++; renderPage(filteredIssues); });
-      document.getElementById('pageSize').addEventListener('change', event => { pageSize = Number(event.target.value); currentPage = 1; renderPage(filteredIssues); });
+        issueList.querySelectorAll('.issue-position').forEach(position => position.addEventListener('click', () => copyPath(position)));
+        setupIssueActions(issueList);
+        document.getElementById('issueCount').textContent = `${filteredIssues.length} issue(s)`;
+        document.getElementById('pagination').innerHTML = filteredIssues.length ? `<span class="pagination-summary">Mostrando ${start + 1}-${Math.min(start + pageSize, filteredIssues.length)} de ${filteredIssues.length}</span><div class="pagination-controls"><button id="previousPage" type="button" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button><span>Página ${currentPage} de ${totalPages}</span><button id="nextPage" type="button" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button><select id="pageSize" aria-label="Issues por página"><option value="25" ${pageSize === 25 ? 'selected' : ''}>25 / página</option><option value="50" ${pageSize === 50 ? 'selected' : ''}>50 / página</option><option value="100" ${pageSize === 100 ? 'selected' : ''}>100 / página</option></select></div>` : '';
+        if (filteredIssues.length) {
+          document.getElementById('previousPage').addEventListener('click', () => { currentPage--; renderPage(filteredIssues); });
+          document.getElementById('nextPage').addEventListener('click', () => { currentPage++; renderPage(filteredIssues); });
+          document.getElementById('pageSize').addEventListener('change', event => { pageSize = Number(event.target.value); currentPage = 1; renderPage(filteredIssues); });
+        }
+      };
+      const filter = () => { const text = document.getElementById('textFilter').value.toLowerCase(); currentPage = 1; renderPage(branch.issues.filter(issue => (!selectedType || issue.type.toLowerCase() === selectedType) && (!text || `${issue.type} ${issue.comment} ${issue.position?.path || ''}`.toLowerCase().includes(text)))); };
+      document.getElementById('textFilter').addEventListener('input', filter);
+      document.addEventListener('click', event => { if (!combobox.contains(event.target)) { combobox.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); } });
+      filter();
     }
-  };
-  const filter = () => { const text = document.getElementById('textFilter').value.toLowerCase(); currentPage = 1; renderPage(branch.issues.filter(issue => (!selectedType || issue.type.toLowerCase() === selectedType) && (!text || `${issue.type} ${issue.comment} ${issue.position?.path || ''}`.toLowerCase().includes(text)))); };
-  document.getElementById('textFilter').addEventListener('input', filter);
-  document.addEventListener('click', event => { if (!combobox.contains(event.target)) { combobox.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); } });
-  filter();
-}
-function formatIssueLocation(issue) {
-  const position = issue.position || {};
-  const path = position.path || 'Sem arquivo';
-  const start = position.startInLine;
-  const end = position.endInLine;
-  if (start == null || end == null) return `<span class="issue-file">${escapeHtml(path)}</span>`;
-  const lineLabel = start === end ? `Linha ${start}` : `Linhas ${start}-${end}`;
-  return `<span class="issue-file">${escapeHtml(path)}</span><span class="issue-line">${lineLabel}</span>`;
-}
-async function copyPath(position) {
-  const path = position.dataset.path;
-  if (!path) return;
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(path);
-    } else {
-      copyPathFallback(path);
+    function formatIssueLocation(issue) {
+      const position = issue.position || {};
+      const path = position.path || 'Sem arquivo';
+      const start = position.startInLine;
+      const end = position.endInLine;
+      if (start == null || end == null) return `<span class="issue-file">${escapeHtml(path)}</span>`;
+      const lineLabel = start === end ? `Linha ${start}` : `Linhas ${start}-${end}`;
+      return `<span class="issue-file">${escapeHtml(path)}</span><span class="issue-line">${lineLabel}</span>`;
     }
-    showCopied(position, path);
-  } catch (error) {
-    copyPathFallback(path);
-    showCopied(position, path);
-  }
-}
-function copyPathFallback(path) {
-  const input = document.createElement('textarea');
-  input.value = path;
-  input.setAttribute('readonly', '');
-  input.style.position = 'fixed';
-  input.style.opacity = '0';
-  document.body.appendChild(input);
-  input.select();
-  document.execCommand('copy');
-  input.remove();
-}
-function showCopied(position, path) {
-    const original = position.textContent;
-    position.classList.add('copied');
-    position.textContent = `Copiado: ${path}`;
-    setTimeout(() => { position.textContent = original; position.classList.remove('copied'); }, 1200);
-}
-function renderRoute() {
-  const parts = window.location.hash.slice(1).split('/').filter(Boolean);
-  if (!parts.length) return renderHome();
-  if (parts[0] === 'executions') return renderExecutions();
-  if (parts[0] === 'execution' && parts[1]) {
-    fetch(`/api/executions/${parts[1]}`).then(response => { if (!response.ok) throw new Error('Execução não encontrada'); return response.json(); }).then(renderExecutionLog).catch(error => { document.getElementById('app').innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`; });
-    return;
-  }
-  if (parts[0] === 'group') {
-    const group = findGroup(parts[1]);
-    if (group && parts[2] === 'issues') return renderGroupIssues(group);
-    if (group && parts.length === 2) return renderGroup(group);
-    if (group && parts[2] === 'project') {
-      const project = findProject(group, parts[3]);
-      if (project && parts[4] === 'branch') {
-        const branch = findBranch(project, parts[5]);
-        if (branch) return renderBranch(group, project, branch);
+    async function copyPath(position) {
+      const path = position.dataset.path;
+      if (!path) return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(path);
+        } else {
+          copyPathFallback(path);
+        }
+        showCopied(position, path);
+      } catch (error) {
+        copyPathFallback(path);
+        showCopied(position, path);
       }
-      if (project) return renderProject(group, project);
     }
-  }
-  setRoute('/');
-}
-window.addEventListener('hashchange', renderRoute);
-document.getElementById('brandHome').addEventListener('click', () => setRoute('/'));
-fetch('/api/dashboard').then(response => { if (!response.ok) throw new Error('Falha ao carregar a API'); return response.json(); }).then(data => { dashboard = data; renderRoute(); }).catch(error => { document.getElementById('app').innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`; });
-</script>
+    function copyPathFallback(path) {
+      const input = document.createElement('textarea');
+      input.value = path;
+      input.setAttribute('readonly', '');
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      input.remove();
+    }
+    function showCopied(position, path) {
+      const original = position.textContent;
+      position.classList.add('copied');
+      position.textContent = `Copiado: ${path}`;
+      setTimeout(() => { position.textContent = original; position.classList.remove('copied'); }, 1200);
+    }
+    function renderRoute() {
+      const parts = window.location.hash.slice(1).split('/').filter(Boolean);
+      if (!parts.length) return renderHome();
+      if (parts[0] === 'executions') return renderExecutions();
+      if (parts[0] === 'execution' && parts[1]) {
+        fetch(`/api/executions/${parts[1]}`).then(response => { if (!response.ok) throw new Error('Execução não encontrada'); return response.json(); }).then(renderExecutionLog).catch(error => { document.getElementById('app').innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`; });
+        return;
+      }
+      if (parts[0] === 'group') {
+        const group = findGroup(parts[1]);
+        if (group && parts[2] === 'issues') return renderGroupIssues(group);
+        if (group && parts.length === 2) return renderGroup(group);
+        if (group && parts[2] === 'project') {
+          const project = findProject(group, parts[3]);
+          if (project && parts[4] === 'branch') {
+            const branch = findBranch(project, parts[5]);
+            if (branch) return renderBranch(group, project, branch);
+          }
+          if (project) return renderProject(group, project);
+        }
+      }
+      setRoute('/');
+    }
+    window.addEventListener('hashchange', renderRoute);
+    document.getElementById('brandHome').addEventListener('click', () => setRoute('/'));
+    fetch('/api/dashboard').then(response => { if (!response.ok) throw new Error('Falha ao carregar a API'); return response.json(); }).then(data => { dashboard = data; renderRoute(); }).catch(error => { document.getElementById('app').innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`; });
+  </script>
 </body>
+
 </html>
