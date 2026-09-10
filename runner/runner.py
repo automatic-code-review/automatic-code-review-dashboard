@@ -135,6 +135,7 @@ def run_review_with_output(
                     merge=merge,
                     stage="static",
                     config_global={},
+                    execution_purpose="source_code_review",
                 )
             except (
                 OSError,
